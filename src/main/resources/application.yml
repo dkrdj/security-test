@@ -1,0 +1,36 @@
+spring:
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+  # H2 Setting Info (H2 Console? ???? ?? ???? ??)
+  h2:
+    console:
+      enabled: true  # H2 Console? ???? ?? (H2 Console? H2 Database? UI? ????? ??)
+      path: /h2-console  # H2 Console? Path
+
+  # Database Setting Info (Database? H2? ???? ?? H2?? ?? ??)
+  datasource:
+    driver-class-name: org.h2.Driver  # Database? H2? ?????.
+    url: jdbc:h2:mem:test;NON_KEYWORDS=USER  # H2 ?? ??
+    username: sa  # H2 ?? ? ??? username ?? (??? ??? ??)
+    password:  # H2 ?? ? ??? password ?? (??? ??? ??)
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: 221898714674-casourl12em510vhgnjoqg5g2n8ji82q.apps.googleusercontent.com # Google? Client ID ?? (??? ??? ??)
+            clientSecret: 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 # Google? Client Secret ?? (??? ??? ??)
+            scope:
+              - email
+              - profile
+            redirect-uri: "http://localhost:8080/login/oauth2/code/google"
+            client-name: Google
+  #???? sql? ??? ??
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
