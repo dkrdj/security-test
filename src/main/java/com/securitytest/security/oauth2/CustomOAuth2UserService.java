@@ -39,11 +39,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (userRequest.getClientRegistration().getRegistrationId().equals("google")) {
             System.out.println("구글 로그인 요청~~");
             oAuth2UserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
-        } else if (userRequest.getClientRegistration().getRegistrationId().equals("KAKAO")) {
+        } else if (userRequest.getClientRegistration().getRegistrationId().equals("kakao")) {
             System.out.println("카카오 로그인 요청~~");
-            oAuth2UserInfo = new KaKaoUserInfo((Map) oAuth2User.getAttributes().get("response"));
+            oAuth2UserInfo = new KaKaoUserInfo((Map) oAuth2User.getAttributes());
+            System.out.println(oAuth2UserInfo.toString());
         } else {
-            System.out.println("우리는 구글과 페이스북만 지원해요 ㅎㅎ");
+            System.out.println("우리는 구글과 카카오만 지원해요 ㅎㅎ");
         }
 
         Optional<User> userOptional =

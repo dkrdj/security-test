@@ -7,6 +7,7 @@ import com.securitytest.jwt.JwtExceptionFilter;
 import com.securitytest.security.handler.OAuth2AuthenticationFailureHandler;
 import com.securitytest.security.handler.OAuth2AuthenticationSuccessHandler;
 import com.securitytest.security.oauth2.CustomOAuth2UserService;
+import com.securitytest.security.oauth2.OAuth2CustomAuthorizationRequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -54,7 +56,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authenticationManager, OAuth2CustomAuthorizationRequestRepository<OAuth2AuthorizationRequest> oAuthCustom2AuthorizationRequestRepository) throws Exception {
 
         return http
                 .addFilter(corsConfig.corsFilter())
@@ -76,14 +78,13 @@ public class SecurityConfig {
                 .and()
                 .oauth2Login()
                 .authorizationEndpoint(authorize -> {
-                    authorize.baseUri("/oauth2/authorization");
-                })
-                .redirectionEndpoint(redirection -> {
-                    redirection.baseUri("/login/oauth2/code/*");
+                    authorize.authorizationRequestRepository(
+                            oAuthCustom2AuthorizationRequestRepository);
                 })
                 .userInfoEndpoint(userInfo -> {
                     userInfo.userService(customOAuth2UserService);
                 })
+                .loginProcessingUrl("/auth/login/*")
                 .successHandler(oAuth2AuthenticationSuccessHandler)
                 .failureHandler(oAuth2AuthenticationFailureHandler)
                 .and()
@@ -91,6 +92,8 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtAuthorizationFilter(userRepository), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtExceptionFilter(), JwtAuthorizationFilter.class)
                 .logout()
+                .logoutUrl("/auth/logout")
+                .deleteCookies("refresh_token")
                 .and()
                 .build();
     }
